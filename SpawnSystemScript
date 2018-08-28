@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SpawnSystemScript : MonoBehaviour {
+
+    public GameObject plr;
+    public GameObject Enemy;
+    public AudioSource poof;
+    AI ai;
+
+	// Use this for initialization
+	void Start () {
+        StartCoroutine("SpawnLoop");
+	}
+
+    IEnumerator SpawnLoop ()
+    {
+        while(1 < 10)
+        {
+            yield return new WaitForSeconds(5);
+            GameObject EnemyClone = Instantiate(Enemy);
+            ai = EnemyClone.GetComponent<AI>();
+            ai.Plr = plr;
+            ai.poof = poof;
+            EnemyClone.transform.position = new Vector3(Random.Range(-10, 10), -1, 0);
+        }
+    }
+	
+}
