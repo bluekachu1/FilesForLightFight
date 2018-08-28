@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Buy : MonoBehaviour {
+
+    public Collect collect;
+    public Points points;
+    public Camera camera;
+    public Color color;
+    public GameObject win;
+    public GameObject ms;
+
+    public void DoublePoints()
+    {
+        if (points.points >= 20)
+        {
+            collect.multi += 1;
+            points.points -= 20;
+        }
+    }
+
+    public void LightUp()
+    {
+        if (points.points >= 600)
+        {
+            camera.backgroundColor = color;
+            points.points -= 600;
+            win.SetActive(true);
+            ms.SetActive(false);
+        }
+    }
+
+    public void pauseShop()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void playShop()
+    {
+        Time.timeScale = 1;
+    }
+
+}
