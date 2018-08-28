@@ -1,0 +1,123 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class PlayerController : MonoBehaviour {
+
+    public Transform transform;
+    public float RunSpeed;
+    float horizontalMove = 0f;
+    public SpriteRenderer spriteRenderer;
+    public GameObject Plr;
+    public Animator animator;
+    bool IsJumping = false;
+    bool InAir = false;
+    public Rigidbody2D rb;
+    public float JumpPower;
+    public Camera cam;
+    public GameObject beam;
+    public Rigidbody2D bRb;
+    public float Health;
+    bool IsOnPlayer = false;
+
+
+	// Use this for initialization
+	void Start () {
+        
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+        cam.transform.position = Plr.transform.position + new Vector3(0, 2, -10);
+        horizontalMove = Input.GetAxisRaw("Horizontal") * RunSpeed;
+
+	}
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.transform.tag == "Ground")
+        {
+            OnLanding();
+        }
+        if (collision.transform.tag == "Enemy")
+        {
+            IsOnPlayer = true;
+            Health -= 10;
+        }
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+         if (collision.transform.tag == "Enemy")
+         {
+             StartCoroutine("TakeDamage");
+         }
+    }
+
+    void FixedUpdate()
+    {
+        if (horizontalMove >= 1)
+        {
+            transform.localScale = new Vector3(horizontalMove * 2, 10, 0);
+            animator.SetInteger("State", 1);
+        }
+
+        if (horizontalMove <= -1)
+        {
+            transform.localScale = new Vector3(horizontalMove * 2, 10, 0);
+            animator.SetInteger("State", 1);
+        }
+
+        if (horizontalMove == 0)
+        {
+            animator.SetInteger("State", 0);
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space) && InAir == false)
+        {
+            InAir = true;
+            IsJumping = true;
+            animator.SetBool("IsJumping", IsJumping);
+            rb.AddForce(new Vector2(0, JumpPower));
+            IsJumping = false;
+        }
+
+        if (Health <= 0)
+        {
+            SceneManager.LoadScene(0);
+        }
+
+        transform.position = transform.position + new Vector3(horizontalMove * Time.fixedDeltaTime,0,0);
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            animator.SetBool("IsShooting", true);
+            GameObject Beam = Instantiate(beam);
+            bRb = Beam.GetComponent<Rigidbody2D>();
+            Beam.transform.position = Plr.transform.position + new Vector3(Plr.transform.localScale.x / 9, 0, 0);
+            Beam.transform.localScale = Plr.transform.localScale;
+            bRb.AddForce(new Vector2(Plr.transform.localScale.x * 40, 0));
+            StartCoroutine("WaitAnim");
+        }
+        
+    }
+
+    public void OnLanding ()
+    {
+        InAir = false;
+        animator.SetBool("IsJumping", IsJumping);
+    }
+
+    IEnumerator WaitAnim ()
+    {
+        yield return new WaitForSeconds(1);
+        animator.SetBool("IsShooting", false);
+    }
+    IEnumerator TakeDamage ()
+    {
+        Health -= 10;
+        yield return new WaitForSeconds(1);
+    }
+}
