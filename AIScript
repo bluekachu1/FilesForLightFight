@@ -1,0 +1,54 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class AI : MonoBehaviour {
+
+    public GameObject Plr;
+    public GameObject Points;
+    public AudioSource poof;
+    public float Health;
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.tag == "Shot")
+        {
+            Health -= 25;
+            Destroy(collision.transform.gameObject);
+            if(Health <= 0)
+            {
+                GameObject Drop = Instantiate(Points);
+                Drop.transform.position = transform.position;
+                poof.Play();
+                Destroy(transform.gameObject);
+            }
+        }
+    }
+
+
+    void FixedUpdate()
+    {
+        if(Plr.transform.localScale.x >= 1 && Plr.transform.position.x > transform.position.x)
+        {
+            transform.position += Plr.transform.localScale / 10 * Time.fixedDeltaTime;
+            transform.localScale = new Vector3(10, 10, 1);
+        }
+        else if (Plr.transform.localScale.x <= -1 && Plr.transform.position.x > transform.position.x)
+        {
+            transform.position += Plr.transform.localScale / 10 * Time.fixedDeltaTime * -2;
+            transform.localScale = new Vector3(10, 10, 1);
+        }
+        if (Plr.transform.localScale.x <= -1 && Plr.transform.position.x < transform.position.x)
+        {
+            transform.position += Plr.transform.localScale / 10 * Time.fixedDeltaTime;
+            transform.localScale = new Vector3(-10, 10, 1);
+        }
+        else if(Plr.transform.localScale.x >= 1 && Plr.transform.position.x < transform.position.x)
+        {
+            transform.position += Plr.transform.localScale / 10 * Time.fixedDeltaTime * -2;
+            transform.localScale = new Vector3(-10, 10, 1);
+        }
+
+    }
+
+}
