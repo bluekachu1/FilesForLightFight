@@ -1,0 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Collect : MonoBehaviour {
+    
+    public float multi;
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.transform.tag == "Player")
+        {
+            Points points = collision.GetComponent<Points>();
+            points.points += (1 * multi);
+            Destroy(transform.gameObject);
+        }
+    }
+
+}
